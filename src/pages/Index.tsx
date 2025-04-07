@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import NavMenu from '@/components/NavMenu';
 import WelcomeScreen from '@/components/WelcomeScreen';
 import ContentSection from '@/components/ContentSection';
