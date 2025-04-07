@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import NavMenu from '@/components/NavMenu';
 import WelcomeScreen from '@/components/WelcomeScreen';
 import ContentSection from '@/components/ContentSection';
@@ -7,19 +7,11 @@ import HelpSystem from '@/components/HelpSystem';
 
 const Index = () => {
   const [welcomeCompleted, setWelcomeCompleted] = useState(false);
-  const [activeSection, setActiveSection] = useState('home');
+  const [activeSection, setActiveSection] = useState('services');
 
   const handleWelcomeComplete = () => {
     setWelcomeCompleted(true);
-    localStorage.setItem('hasVisitedBefore', 'true');
   };
-
-  useEffect(() => {
-    const isReturningUser = localStorage.getItem('hasVisitedBefore');
-    if (isReturningUser) {
-      setWelcomeCompleted(true);
-    }
-  }, []);
 
   return (
     <div className="min-h-screen">

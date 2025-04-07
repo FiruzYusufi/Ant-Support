@@ -13,20 +13,21 @@ const RemoteDisplay = ({ remoteType }: RemoteDisplayProps) => {
   };
 
   const remoteInstructions: {[key: string]: string} = {
-    'OpenBox': "Нажмите 'Меню' → 'Настройки' → 'Поиск каналов'.",
-    'HDBox': "Перезагрузите приставку, затем попробуйте заново.",
-    'Uclan': "Убедитесь, что антенна подключена, затем перезапустите устройство."
+    'OpenBox': "Для устранения проблем с сигналом используйте кнопки на пульте OpenBox.",
+    'HDBox': "На пульте HDBox найдите кнопку 'Меню' для доступа к настройкам.",
+    'Uclan': "Пульт Uclan позволяет быстро перенастроить каналы через меню 'Установка'."
   };
 
   return (
-    <div id="remote-display" className="mt-6">
-      <h3 className="text-xl font-semibold mb-4">Ваш пульт:</h3>
-      <img 
-        src={remoteImages[remoteType]}
-        alt={`Пульт ${remoteType}`}
-        className="w-64 mx-auto rounded-md shadow-md"
-      />
-      <p className="mt-4 text-lg text-center">{remoteInstructions[remoteType]}</p>
+    <div className="flex flex-col items-center">
+      <div className="bg-white p-4 rounded-lg shadow-md">
+        <img 
+          src={remoteImages[remoteType]}
+          alt={`Пульт ${remoteType}`}
+          className="h-auto max-h-96 mx-auto object-contain"
+        />
+      </div>
+      <p className="mt-4 text-center text-sm">{remoteInstructions[remoteType]}</p>
     </div>
   );
 };
