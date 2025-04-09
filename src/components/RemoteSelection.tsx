@@ -12,19 +12,19 @@ const RemoteSelection = ({ onSelectRemote }: RemoteSelectionProps) => {
       id: 'OpenBox', 
       name: 'OpenBox', 
       image: '/lovable-uploads/64b3e7a7-593e-444b-8020-cc0203022c1c.png',
-      description: 'Пульт для спутникового ресивера OpenBox'
+      description: 'Пульт для спутникового ресивера OpenBox с доступом к 120+ каналам'
     },
     { 
       id: 'HDBox', 
       name: 'HDBox', 
       image: '/lovable-uploads/6126de2f-146b-46b7-9b74-7f3e24dd4394.png',
-      description: 'Пульт для цифрового ресивера HDBox'
+      description: 'Пульт для цифрового ресивера HDBox с поддержкой HD каналов и медиаплеера'
     },
     { 
       id: 'Uclan', 
       name: 'Uclan', 
       image: '/lovable-uploads/892127b7-c67e-44b2-a005-f579a19850ca.png',
-      description: 'Пульт для спутникового ресивера Uclan'
+      description: 'Пульт для спутникового ресивера Uclan с расширенными функциями записи'
     },
   ];
 
