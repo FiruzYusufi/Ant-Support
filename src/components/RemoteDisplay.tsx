@@ -1,138 +1,170 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { toast } from 'sonner';
+import { 
+  Power, VolumeX, Volume2, Tv2, Search, Menu, 
+  Info, ArrowUp, ArrowDown, ArrowLeft, ArrowRight,
+  Play, Pause, SkipBack, SkipForward, Square
+} from 'lucide-react';
 
 interface RemoteDisplayProps {
   remoteType: string;
   selectedError: string;
+  onRemoteAction: (action: string, value?: any) => void;
 }
 
-const RemoteDisplay = ({ remoteType, selectedError }: RemoteDisplayProps) => {
-  const [tvMessage, setTvMessage] = useState<string | null>(null);
-  const [powerState, setPowerState] = useState<boolean>(true);
-  const [channel, setChannel] = useState<number>(1);
-  const [volume, setVolume] = useState<number>(50);
-  const [showMenu, setShowMenu] = useState<boolean>(false);
-  
+const RemoteDisplay = ({ remoteType, selectedError, onRemoteAction }: RemoteDisplayProps) => {
   const remoteImages: {[key: string]: string} = {
-    'OpenBox': '/images/openbox.jpg',
-    'HDBox': '/images/hdbox.jpg',
-    'Uclan': '/images/uclan.jpg'
-  };
-
-  const remoteInstructions: {[key: string]: string} = {
-    'OpenBox': "Используйте красные и цветные кнопки для доступа к специальным функциям. Нажмите OK для выбора канала.",
-    'HDBox': "На пульте HDBox нажмите 'MENU' для доступа к настройкам или используйте цифры для выбора канала.",
-    'Uclan': "Пульт Uclan позволяет быстро перенастроить каналы через кнопки навигации и меню."
+    'OpenBox': '/lovable-uploads/64b3e7a7-593e-444b-8020-cc0203022c1c.png',
+    'HDBox': '/lovable-uploads/6126de2f-146b-46b7-9b74-7f3e24dd4394.png',
+    'Uclan': '/lovable-uploads/892127b7-c67e-44b2-a005-f579a19850ca.png'
   };
 
   const handleButtonClick = (buttonName: string) => {
-    // Если выбрана ошибка "Нет сигнала", большинство кнопок не будут работать
-    if (selectedError === "no_signal" && !["power", "menu", "exit"].includes(buttonName)) {
-      setTvMessage("Нет сигнала");
-      toast("Нет сигнала. Сначала устраните проблему с сигналом.");
+    // Handle errors that block most functionality
+    if (selectedError === "no_signal" && !["power", "menu", "exit", "search_channels"].includes(buttonName)) {
+      toast.error("Нет сигнала. Сначала устраните проблему с сигналом.");
+      onRemoteAction('error', 'no_signal');
       return;
     }
 
-    // Если выбрана ошибка "Каналы закодированы", некоторые функции будут ограничены
     if (selectedError === "channels_encoded" && ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"].includes(buttonName)) {
-      setTvMessage("Канал закодирован");
-      toast("Этот канал закодирован. Необходима подписка.");
+      toast.error("Этот канал закодирован. Необходима подписка.");
+      onRemoteAction('error', 'channels_encoded');
       return;
     }
 
-    // Обработка кнопок в зависимости от их функции
+    // Map button names to actions
     switch (buttonName) {
       case "power":
-        setPowerState(!powerState);
-        setTvMessage(powerState ? "Выключение..." : "Включение...");
-        toast(powerState ? "ТВ выключается" : "ТВ включается");
-        setTimeout(() => setTvMessage(null), 2000);
+        onRemoteAction('power');
         break;
       
       case "menu":
-        setShowMenu(!showMenu);
-        setTvMessage(showMenu ? null : "Меню");
+        onRemoteAction('menu');
         break;
       
       case "exit":
-        setShowMenu(false);
-        setTvMessage(null);
-        toast("Выход из меню");
+        onRemoteAction('exit');
         break;
       
       case "ok":
-        toast("Подтверждено");
+        onRemoteAction('ok');
         break;
       
       case "vol+":
-        if (volume < 100) {
-          setVolume(volume + 5);
-          setTvMessage(`Громкость: ${volume + 5}`);
-          setTimeout(() => setTvMessage(null), 1500);
-        }
+        onRemoteAction('volume', 5);
         break;
       
       case "vol-":
-        if (volume > 0) {
-          setVolume(volume - 5);
-          setTvMessage(`Громкость: ${volume - 5}`);
-          setTimeout(() => setTvMessage(null), 1500);
-        }
+        onRemoteAction('volume', -5);
         break;
       
+      case "mute":
+        onRemoteAction('mute');
+        break;
+      
+      case "up":
+        onRemoteAction('navigate', 'up');
+        break;
+        
+      case "down":
+        onRemoteAction('navigate', 'down');
+        break;
+        
+      case "left":
+        onRemoteAction('navigate', 'left');
+        break;
+        
+      case "right":
+        onRemoteAction('navigate', 'right');
+        break;
+        
       case "p+":
       case "ch+":
-        setChannel(channel + 1);
-        setTvMessage(`Канал: ${channel + 1}`);
-        setTimeout(() => setTvMessage(null), 1500);
+        onRemoteAction('channel_change', 1);
         break;
       
       case "p-":
       case "ch-":
-        if (channel > 1) {
-          setChannel(channel - 1);
-          setTvMessage(`Канал: ${channel - 1}`);
-          setTimeout(() => setTvMessage(null), 1500);
-        }
+        onRemoteAction('channel_change', -1);
         break;
       
       case "epg":
-        setTvMessage("Программа передач");
-        toast("Открыта программа передач");
+        onRemoteAction('epg');
+        break;
+        
+      case "info":
+        onRemoteAction('info');
+        break;
+        
+      case "play":
+        onRemoteAction('play');
+        break;
+        
+      case "pause":
+        onRemoteAction('pause');
+        break;
+        
+      case "stop":
+        onRemoteAction('stop');
+        break;
+        
+      case "rec":
+        onRemoteAction('record');
+        break;
+        
+      case "search":
+      case "find":
+        onRemoteAction('search_channels');
         break;
       
+      case "tvradio":
+      case "tv/sat":
+      case "tvr":
+        onRemoteAction('tv_radio_toggle');
+        break;
+        
+      case "aspect":
+        onRemoteAction('aspect_ratio');
+        break;
+        
       default:
-        // Если это цифровая кнопка
+        // If this is a number button (channel selection)
         if (!isNaN(Number(buttonName))) {
-          setChannel(Number(buttonName));
-          setTvMessage(`Канал: ${buttonName}`);
-          setTimeout(() => setTvMessage(null), 1500);
+          onRemoteAction('channel', Number(buttonName));
         } else {
-          toast(`Нажата кнопка: ${buttonName}`);
+          onRemoteAction(buttonName);
         }
     }
   };
 
-  // Рендеринг кнопок в зависимости от типа пульта
+  // Render the specific remote based on type
   const renderRemoteButtons = () => {
     switch (remoteType) {
       case "OpenBox":
         return (
           <div className="absolute inset-0 flex flex-col">
+            {/* Power row */}
             <div className="flex justify-between mt-4 mx-4">
               <button
                 onClick={() => handleButtonClick("power")}
-                className="w-8 h-8 bg-red-600 rounded-full"
+                className="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center"
                 title="Кнопка питания"
-              ></button>
+              >
+                <Power size={14} color="white" />
+              </button>
+              
               <button
                 onClick={() => handleButtonClick("mute")}
-                className="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center text-xs"
+                className="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center"
                 title="Без звука"
-              >OK</button>
+              >
+                <VolumeX size={14} color="white" />
+              </button>
             </div>
             
+            {/* Number buttons */}
             <div className="grid grid-cols-3 gap-2 mt-6 mx-4">
               {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(num => (
                 <button
@@ -145,10 +177,10 @@ const RemoteDisplay = ({ remoteType, selectedError }: RemoteDisplayProps) => {
                 </button>
               ))}
               <button
-                onClick={() => handleButtonClick("back")}
+                onClick={() => handleButtonClick("tvradio")}
                 className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-xs"
               >
-                Б/П
+                TV/R
               </button>
               <button
                 onClick={() => handleButtonClick("0")}
@@ -164,10 +196,11 @@ const RemoteDisplay = ({ remoteType, selectedError }: RemoteDisplayProps) => {
               </button>
             </div>
             
+            {/* Menu row */}
             <div className="flex justify-between mt-4 mx-8">
               <button
                 onClick={() => handleButtonClick("menu")}
-                className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center text-white text-xs"
+                className="w-12 h-8 bg-gray-600 rounded-full flex items-center justify-center text-white text-xs"
               >
                 MENU
               </button>
@@ -179,25 +212,26 @@ const RemoteDisplay = ({ remoteType, selectedError }: RemoteDisplayProps) => {
               </button>
               <button
                 onClick={() => handleButtonClick("exit")}
-                className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center text-white text-xs"
+                className="w-12 h-8 bg-gray-600 rounded-full flex items-center justify-center text-white text-xs"
               >
                 EXIT
               </button>
             </div>
             
+            {/* Navigation */}
             <div className="flex flex-col items-center mt-6">
               <div className="w-24 h-24 relative">
                 <button
                   onClick={() => handleButtonClick("up")}
                   className="absolute top-0 left-1/2 transform -translate-x-1/2 w-8 h-8 bg-blue-500 text-white flex items-center justify-center"
                 >
-                  ▲
+                  <ArrowUp size={18} />
                 </button>
                 <button
                   onClick={() => handleButtonClick("left")}
                   className="absolute top-1/2 left-0 transform -translate-y-1/2 w-8 h-8 bg-blue-500 text-white flex items-center justify-center"
                 >
-                  ◀
+                  <ArrowLeft size={18} />
                 </button>
                 <button
                   onClick={() => handleButtonClick("ok")}
@@ -209,17 +243,18 @@ const RemoteDisplay = ({ remoteType, selectedError }: RemoteDisplayProps) => {
                   onClick={() => handleButtonClick("right")}
                   className="absolute top-1/2 right-0 transform -translate-y-1/2 w-8 h-8 bg-blue-500 text-white flex items-center justify-center"
                 >
-                  ▶
+                  <ArrowRight size={18} />
                 </button>
                 <button
                   onClick={() => handleButtonClick("down")}
                   className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-8 bg-blue-500 text-white flex items-center justify-center"
                 >
-                  ▼
+                  <ArrowDown size={18} />
                 </button>
               </div>
             </div>
             
+            {/* Program buttons */}
             <div className="flex justify-between mt-6 mx-4">
               <button
                 onClick={() => handleButtonClick("p-")}
@@ -235,6 +270,7 @@ const RemoteDisplay = ({ remoteType, selectedError }: RemoteDisplayProps) => {
               </button>
             </div>
             
+            {/* Color buttons */}
             <div className="grid grid-cols-4 gap-2 mt-6 mx-4">
               <button
                 onClick={() => handleButtonClick("red")}
@@ -257,18 +293,43 @@ const RemoteDisplay = ({ remoteType, selectedError }: RemoteDisplayProps) => {
                 title="Синяя кнопка"
               ></button>
             </div>
+            
+            {/* Bottom buttons */}
+            <div className="grid grid-cols-3 gap-2 mt-4 mx-4">
+              <button
+                onClick={() => handleButtonClick("find")}
+                className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-xs"
+              >
+                FIND
+              </button>
+              <button
+                onClick={() => handleButtonClick("epg")}
+                className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-xs"
+              >
+                EPG
+              </button>
+              <button
+                onClick={() => handleButtonClick("fav")}
+                className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-xs"
+              >
+                FAV
+              </button>
+            </div>
           </div>
         );
       
       case "HDBox":
         return (
           <div className="absolute inset-0 flex flex-col">
+            {/* Top row */}
             <div className="flex justify-between mt-4 mx-4">
               <button
                 onClick={() => handleButtonClick("power")}
-                className="w-8 h-8 bg-red-600 rounded-full"
+                className="w-8 h-8 bg-red-600 rounded-md flex items-center justify-center"
                 title="Кнопка питания"
-              ></button>
+              >
+                <Power size={14} color="white" />
+              </button>
               <button
                 onClick={() => handleButtonClick("tvradio")}
                 className="w-12 h-8 bg-gray-700 rounded-md flex items-center justify-center text-white text-xs"
@@ -277,12 +338,13 @@ const RemoteDisplay = ({ remoteType, selectedError }: RemoteDisplayProps) => {
               </button>
               <button
                 onClick={() => handleButtonClick("mute")}
-                className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center text-white text-xs"
+                className="w-8 h-8 bg-gray-700 rounded-md flex items-center justify-center text-white text-xs"
               >
-                OK
+                <VolumeX size={14} color="white" />
               </button>
             </div>
             
+            {/* Number buttons */}
             <div className="grid grid-cols-3 gap-2 mt-6 mx-4">
               {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(num => (
                 <button
@@ -314,6 +376,7 @@ const RemoteDisplay = ({ remoteType, selectedError }: RemoteDisplayProps) => {
               </button>
             </div>
             
+            {/* Control buttons */}
             <div className="flex justify-between mt-4 mx-6">
               <button
                 onClick={() => handleButtonClick("back")}
@@ -344,19 +407,20 @@ const RemoteDisplay = ({ remoteType, selectedError }: RemoteDisplayProps) => {
               </button>
             </div>
             
+            {/* Navigation */}
             <div className="flex flex-col items-center mt-4">
               <div className="w-24 h-24 relative">
                 <button
                   onClick={() => handleButtonClick("up")}
                   className="absolute top-0 left-1/2 transform -translate-x-1/2 w-8 h-8 text-white flex items-center justify-center"
                 >
-                  ▲
+                  <ArrowUp size={18} />
                 </button>
                 <button
                   onClick={() => handleButtonClick("left")}
                   className="absolute top-1/2 left-0 transform -translate-y-1/2 w-8 h-8 text-white flex items-center justify-center"
                 >
-                  ◀
+                  <ArrowLeft size={18} />
                 </button>
                 <button
                   onClick={() => handleButtonClick("ok")}
@@ -368,18 +432,19 @@ const RemoteDisplay = ({ remoteType, selectedError }: RemoteDisplayProps) => {
                   onClick={() => handleButtonClick("right")}
                   className="absolute top-1/2 right-0 transform -translate-y-1/2 w-8 h-8 text-white flex items-center justify-center"
                 >
-                  ▶
+                  <ArrowRight size={18} />
                 </button>
                 <button
                   onClick={() => handleButtonClick("down")}
                   className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-8 text-white flex items-center justify-center"
                 >
-                  ▼
+                  <ArrowDown size={18} />
                 </button>
               </div>
             </div>
             
-            <div className="grid grid-cols-4 gap-2 mt-6 mx-4">
+            {/* Colored buttons */}
+            <div className="grid grid-cols-4 gap-2 mt-4 mx-4">
               <button
                 onClick={() => handleButtonClick("aspect")}
                 className="w-10 h-8 bg-red-600 rounded-md flex items-center justify-center text-white text-xs"
@@ -405,33 +470,65 @@ const RemoteDisplay = ({ remoteType, selectedError }: RemoteDisplayProps) => {
                 SLEEP
               </button>
             </div>
+            
+            {/* Media buttons */}
+            <div className="grid grid-cols-4 gap-2 mt-2 mx-4">
+              <button
+                onClick={() => handleButtonClick("prev")}
+                className="w-8 h-8 bg-gray-800 rounded-md flex items-center justify-center text-white"
+              >
+                <SkipBack size={14} />
+              </button>
+              <button
+                onClick={() => handleButtonClick("play")}
+                className="w-8 h-8 bg-gray-800 rounded-md flex items-center justify-center text-white"
+              >
+                <Play size={14} />
+              </button>
+              <button
+                onClick={() => handleButtonClick("pause")}
+                className="w-8 h-8 bg-gray-800 rounded-md flex items-center justify-center text-white"
+              >
+                <Pause size={14} />
+              </button>
+              <button
+                onClick={() => handleButtonClick("next")}
+                className="w-8 h-8 bg-gray-800 rounded-md flex items-center justify-center text-white"
+              >
+                <SkipForward size={14} />
+              </button>
+            </div>
           </div>
         );
       
       case "Uclan":
         return (
           <div className="absolute inset-0 flex flex-col">
+            {/* Power row */}
             <div className="flex justify-between mt-4 mx-4">
               <button
                 onClick={() => handleButtonClick("power")}
                 className="w-8 h-8 bg-red-600 rounded-md"
                 title="Кнопка питания"
-              ></button>
+              >
+                <Power size={14} color="white" className="mx-auto my-auto" />
+              </button>
               <button
                 onClick={() => handleButtonClick("mute")}
                 className="w-8 h-8 bg-gray-800 rounded-md flex items-center justify-center text-white text-xs"
                 title="Без звука"
               >
-                🔊
+                <VolumeX size={14} color="white" />
               </button>
             </div>
             
+            {/* Media buttons */}
             <div className="flex justify-between mt-4 mx-4">
               <button
                 onClick={() => handleButtonClick("prev")}
                 className="w-8 h-8 bg-gray-800 rounded-md flex items-center justify-center text-white text-xs"
               >
-                ◀◀
+                <SkipBack size={14} />
               </button>
               <button
                 onClick={() => handleButtonClick("rec")}
@@ -443,16 +540,17 @@ const RemoteDisplay = ({ remoteType, selectedError }: RemoteDisplayProps) => {
                 onClick={() => handleButtonClick("stop")}
                 className="w-8 h-8 bg-gray-800 rounded-md flex items-center justify-center text-white text-xs"
               >
-                ■
+                <Square size={14} />
               </button>
               <button
                 onClick={() => handleButtonClick("next")}
                 className="w-8 h-8 bg-gray-800 rounded-md flex items-center justify-center text-white text-xs"
               >
-                ▶▶
+                <SkipForward size={14} />
               </button>
             </div>
             
+            {/* Color buttons */}
             <div className="grid grid-cols-4 gap-2 mt-4 mx-4">
               <button
                 onClick={() => handleButtonClick("audio")}
@@ -480,6 +578,7 @@ const RemoteDisplay = ({ remoteType, selectedError }: RemoteDisplayProps) => {
               </button>
             </div>
             
+            {/* Info buttons */}
             <div className="flex justify-between mt-4 mx-8">
               <button
                 onClick={() => handleButtonClick("info")}
@@ -495,19 +594,20 @@ const RemoteDisplay = ({ remoteType, selectedError }: RemoteDisplayProps) => {
               </button>
             </div>
             
+            {/* Navigation */}
             <div className="flex flex-col items-center mt-2">
               <div className="w-24 h-24 relative">
                 <button
                   onClick={() => handleButtonClick("up")}
                   className="absolute top-0 left-1/2 transform -translate-x-1/2 w-8 h-8 text-white flex items-center justify-center"
                 >
-                  ▲
+                  <ArrowUp size={18} />
                 </button>
                 <button
                   onClick={() => handleButtonClick("left")}
                   className="absolute top-1/2 left-0 transform -translate-y-1/2 w-8 h-8 text-white flex items-center justify-center"
                 >
-                  ◀
+                  <ArrowLeft size={18} />
                 </button>
                 <button
                   onClick={() => handleButtonClick("ok")}
@@ -519,17 +619,18 @@ const RemoteDisplay = ({ remoteType, selectedError }: RemoteDisplayProps) => {
                   onClick={() => handleButtonClick("right")}
                   className="absolute top-1/2 right-0 transform -translate-y-1/2 w-8 h-8 text-white flex items-center justify-center"
                 >
-                  ▶
+                  <ArrowRight size={18} />
                 </button>
                 <button
                   onClick={() => handleButtonClick("down")}
                   className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-8 text-white flex items-center justify-center"
                 >
-                  ▼
+                  <ArrowDown size={18} />
                 </button>
               </div>
             </div>
             
+            {/* Menu/Exit buttons */}
             <div className="flex justify-between mt-2 mx-8">
               <button
                 onClick={() => handleButtonClick("menu")}
@@ -545,7 +646,51 @@ const RemoteDisplay = ({ remoteType, selectedError }: RemoteDisplayProps) => {
               </button>
             </div>
             
-            <div className="grid grid-cols-3 gap-y-2 gap-x-4 mt-4 mx-auto">
+            {/* Volume and feature buttons */}
+            <div className="flex justify-around mt-2 mx-4">
+              <div className="flex flex-col items-center">
+                <button
+                  onClick={() => handleButtonClick("vol+")}
+                  className="w-8 h-8 bg-gray-800 rounded-t-md flex items-center justify-center text-white text-xs"
+                >
+                  +
+                </button>
+                <div className="w-8 flex items-center justify-center bg-gray-700 text-white text-xs py-1">
+                  VOL
+                </div>
+                <button
+                  onClick={() => handleButtonClick("vol-")}
+                  className="w-8 h-8 bg-gray-800 rounded-b-md flex items-center justify-center text-white text-xs"
+                >
+                  -
+                </button>
+              </div>
+              
+              <button
+                onClick={() => handleButtonClick("fav")}
+                className="w-8 h-8 bg-gray-800 rounded-md flex items-center justify-center text-white text-xs"
+              >
+                FAV
+              </button>
+              
+              <div className="flex">
+                <button
+                  onClick={() => handleButtonClick("play")}
+                  className="w-8 h-8 bg-gray-800 rounded-l-md flex items-center justify-center text-white"
+                >
+                  <Play size={14} />
+                </button>
+                <button
+                  onClick={() => handleButtonClick("pause")}
+                  className="w-8 h-8 bg-gray-800 rounded-r-md flex items-center justify-center text-white"
+                >
+                  <Pause size={14} />
+                </button>
+              </div>
+            </div>
+            
+            {/* Number pad */}
+            <div className="grid grid-cols-3 gap-2 mt-2 mx-4">
               {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(num => (
                 <button
                   key={num}
@@ -589,11 +734,14 @@ const RemoteDisplay = ({ remoteType, selectedError }: RemoteDisplayProps) => {
         <img 
           src={remoteImages[remoteType]}
           alt={`Пульт ${remoteType}`}
-          className="h-auto max-h-96 mx-auto object-contain opacity-75"
+          className="h-auto max-h-96 mx-auto object-contain opacity-85"
         />
         {renderRemoteButtons()}
       </div>
-      <p className="mt-4 text-center text-sm">{remoteInstructions[remoteType]}</p>
+      <div className="mt-4 text-center text-sm">
+        <p>Выберите кнопку на пульте для управления телевизором</p>
+        <p className="text-gray-600 mt-1">Все кнопки активны и реагируют на нажатие</p>
+      </div>
     </div>
   );
 };
