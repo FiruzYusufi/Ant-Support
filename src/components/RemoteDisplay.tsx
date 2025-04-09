@@ -21,15 +21,26 @@ const RemoteDisplay = ({ remoteType, selectedError, onRemoteAction }: RemoteDisp
   };
 
   const handleButtonClick = (buttonName: string) => {
+    // Provide tactile feedback with toast notification
+    toast.success(`Нажата кнопка: ${buttonName}`, {
+      duration: 1000,
+      position: 'bottom-right',
+      className: 'bg-black/80 text-white',
+    });
+
     // Handle errors that block most functionality
     if (selectedError === "no_signal" && !["power", "menu", "exit", "search_channels"].includes(buttonName)) {
-      toast.error("Нет сигнала. Сначала устраните проблему с сигналом.");
+      toast.error("Нет сигнала. Сначала устраните проблему с сигналом.", {
+        duration: 3000,
+      });
       onRemoteAction('error', 'no_signal');
       return;
     }
 
     if (selectedError === "channels_encoded" && ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"].includes(buttonName)) {
-      toast.error("Этот канал закодирован. Необходима подписка.");
+      toast.error("Этот канал закодирован. Необходима подписка.", {
+        duration: 3000,
+      });
       onRemoteAction('error', 'channels_encoded');
       return;
     }
@@ -149,7 +160,7 @@ const RemoteDisplay = ({ remoteType, selectedError, onRemoteAction }: RemoteDisp
             <div className="flex justify-between mt-4 mx-4">
               <button
                 onClick={() => handleButtonClick("power")}
-                className="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center"
+                className="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center shadow-lg hover:brightness-110 active:scale-95 transition-all"
                 title="Кнопка питания"
               >
                 <Power size={14} color="white" />
@@ -157,7 +168,7 @@ const RemoteDisplay = ({ remoteType, selectedError, onRemoteAction }: RemoteDisp
               
               <button
                 onClick={() => handleButtonClick("mute")}
-                className="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center"
+                className="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center shadow-lg hover:brightness-110 active:scale-95 transition-all"
                 title="Без звука"
               >
                 <VolumeX size={14} color="white" />
@@ -170,7 +181,7 @@ const RemoteDisplay = ({ remoteType, selectedError, onRemoteAction }: RemoteDisp
                 <button
                   key={num}
                   onClick={() => handleButtonClick(num.toString())}
-                  className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center"
+                  className="w-8 h-8 bg-gray-800 text-white rounded-full flex items-center justify-center shadow hover:brightness-110 active:scale-95 transition-all"
                   title={`Кнопка ${num}`}
                 >
                   {num}
@@ -178,19 +189,19 @@ const RemoteDisplay = ({ remoteType, selectedError, onRemoteAction }: RemoteDisp
               ))}
               <button
                 onClick={() => handleButtonClick("tvradio")}
-                className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-xs"
+                className="w-8 h-8 bg-gray-900 text-white rounded-full flex items-center justify-center text-xs shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 TV/R
               </button>
               <button
                 onClick={() => handleButtonClick("0")}
-                className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center"
+                className="w-8 h-8 bg-gray-800 text-white rounded-full flex items-center justify-center shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 0
               </button>
               <button
                 onClick={() => handleButtonClick("recall")}
-                className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-xs"
+                className="w-8 h-8 bg-gray-900 text-white rounded-full flex items-center justify-center text-xs shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 ↩
               </button>
@@ -200,19 +211,19 @@ const RemoteDisplay = ({ remoteType, selectedError, onRemoteAction }: RemoteDisp
             <div className="flex justify-between mt-4 mx-8">
               <button
                 onClick={() => handleButtonClick("menu")}
-                className="w-12 h-8 bg-gray-600 rounded-full flex items-center justify-center text-white text-xs"
+                className="w-12 h-8 bg-gray-900 rounded-full flex items-center justify-center text-white text-xs shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 MENU
               </button>
               <button
                 onClick={() => handleButtonClick("info")}
-                className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center text-white text-xs"
+                className="w-8 h-8 bg-gray-900 rounded-full flex items-center justify-center text-white text-xs shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 i
               </button>
               <button
                 onClick={() => handleButtonClick("exit")}
-                className="w-12 h-8 bg-gray-600 rounded-full flex items-center justify-center text-white text-xs"
+                className="w-12 h-8 bg-gray-900 rounded-full flex items-center justify-center text-white text-xs shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 EXIT
               </button>
@@ -223,31 +234,31 @@ const RemoteDisplay = ({ remoteType, selectedError, onRemoteAction }: RemoteDisp
               <div className="w-24 h-24 relative">
                 <button
                   onClick={() => handleButtonClick("up")}
-                  className="absolute top-0 left-1/2 transform -translate-x-1/2 w-8 h-8 bg-blue-500 text-white flex items-center justify-center"
+                  className="absolute top-0 left-1/2 transform -translate-x-1/2 w-8 h-8 bg-blue-600 text-white flex items-center justify-center hover:brightness-110 active:scale-95 transition-all"
                 >
                   <ArrowUp size={18} />
                 </button>
                 <button
                   onClick={() => handleButtonClick("left")}
-                  className="absolute top-1/2 left-0 transform -translate-y-1/2 w-8 h-8 bg-blue-500 text-white flex items-center justify-center"
+                  className="absolute top-1/2 left-0 transform -translate-y-1/2 w-8 h-8 bg-blue-600 text-white flex items-center justify-center hover:brightness-110 active:scale-95 transition-all"
                 >
                   <ArrowLeft size={18} />
                 </button>
                 <button
                   onClick={() => handleButtonClick("ok")}
-                  className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center"
+                  className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-blue-700 text-white rounded-full flex items-center justify-center shadow hover:brightness-110 active:scale-95 transition-all"
                 >
                   OK
                 </button>
                 <button
                   onClick={() => handleButtonClick("right")}
-                  className="absolute top-1/2 right-0 transform -translate-y-1/2 w-8 h-8 bg-blue-500 text-white flex items-center justify-center"
+                  className="absolute top-1/2 right-0 transform -translate-y-1/2 w-8 h-8 bg-blue-600 text-white flex items-center justify-center hover:brightness-110 active:scale-95 transition-all"
                 >
                   <ArrowRight size={18} />
                 </button>
                 <button
                   onClick={() => handleButtonClick("down")}
-                  className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-8 bg-blue-500 text-white flex items-center justify-center"
+                  className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-8 bg-blue-600 text-white flex items-center justify-center hover:brightness-110 active:scale-95 transition-all"
                 >
                   <ArrowDown size={18} />
                 </button>
@@ -258,13 +269,13 @@ const RemoteDisplay = ({ remoteType, selectedError, onRemoteAction }: RemoteDisp
             <div className="flex justify-between mt-6 mx-4">
               <button
                 onClick={() => handleButtonClick("p-")}
-                className="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center text-xs"
+                className="w-8 h-8 bg-gray-800 text-white rounded-full flex items-center justify-center text-xs shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 P-
               </button>
               <button
                 onClick={() => handleButtonClick("p+")}
-                className="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center text-xs"
+                className="w-8 h-8 bg-gray-800 text-white rounded-full flex items-center justify-center text-xs shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 P+
               </button>
@@ -274,22 +285,22 @@ const RemoteDisplay = ({ remoteType, selectedError, onRemoteAction }: RemoteDisp
             <div className="grid grid-cols-4 gap-2 mt-6 mx-4">
               <button
                 onClick={() => handleButtonClick("red")}
-                className="w-8 h-8 bg-red-600 rounded-full"
+                className="w-8 h-8 bg-red-600 rounded-full shadow hover:brightness-110 active:scale-95 transition-all"
                 title="Красная кнопка"
               ></button>
               <button
                 onClick={() => handleButtonClick("green")}
-                className="w-8 h-8 bg-green-600 rounded-full"
+                className="w-8 h-8 bg-green-600 rounded-full shadow hover:brightness-110 active:scale-95 transition-all"
                 title="Зеленая кнопка"
               ></button>
               <button
                 onClick={() => handleButtonClick("yellow")}
-                className="w-8 h-8 bg-yellow-500 rounded-full"
+                className="w-8 h-8 bg-yellow-500 rounded-full shadow hover:brightness-110 active:scale-95 transition-all"
                 title="Желтая кнопка"
               ></button>
               <button
                 onClick={() => handleButtonClick("blue")}
-                className="w-8 h-8 bg-blue-600 rounded-full"
+                className="w-8 h-8 bg-blue-600 rounded-full shadow hover:brightness-110 active:scale-95 transition-all"
                 title="Синяя кнопка"
               ></button>
             </div>
@@ -298,19 +309,19 @@ const RemoteDisplay = ({ remoteType, selectedError, onRemoteAction }: RemoteDisp
             <div className="grid grid-cols-3 gap-2 mt-4 mx-4">
               <button
                 onClick={() => handleButtonClick("find")}
-                className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-xs"
+                className="w-8 h-8 bg-gray-800 text-white rounded-full flex items-center justify-center text-xs shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 FIND
               </button>
               <button
                 onClick={() => handleButtonClick("epg")}
-                className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-xs"
+                className="w-8 h-8 bg-gray-800 text-white rounded-full flex items-center justify-center text-xs shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 EPG
               </button>
               <button
                 onClick={() => handleButtonClick("fav")}
-                className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-xs"
+                className="w-8 h-8 bg-gray-800 text-white rounded-full flex items-center justify-center text-xs shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 FAV
               </button>
@@ -325,20 +336,20 @@ const RemoteDisplay = ({ remoteType, selectedError, onRemoteAction }: RemoteDisp
             <div className="flex justify-between mt-4 mx-4">
               <button
                 onClick={() => handleButtonClick("power")}
-                className="w-8 h-8 bg-red-600 rounded-md flex items-center justify-center"
+                className="w-8 h-8 bg-red-600 rounded-md flex items-center justify-center shadow hover:brightness-110 active:scale-95 transition-all"
                 title="Кнопка питания"
               >
                 <Power size={14} color="white" />
               </button>
               <button
                 onClick={() => handleButtonClick("tvradio")}
-                className="w-12 h-8 bg-gray-700 rounded-md flex items-center justify-center text-white text-xs"
+                className="w-12 h-8 bg-gray-900 rounded-md flex items-center justify-center text-white text-xs shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 TV/RADIO
               </button>
               <button
                 onClick={() => handleButtonClick("mute")}
-                className="w-8 h-8 bg-gray-700 rounded-md flex items-center justify-center text-white text-xs"
+                className="w-8 h-8 bg-gray-900 rounded-md flex items-center justify-center text-white text-xs shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 <VolumeX size={14} color="white" />
               </button>
@@ -350,7 +361,7 @@ const RemoteDisplay = ({ remoteType, selectedError, onRemoteAction }: RemoteDisp
                 <button
                   key={num}
                   onClick={() => handleButtonClick(num.toString())}
-                  className="w-8 h-8 bg-gray-800 rounded-md flex items-center justify-center text-white"
+                  className="w-8 h-8 bg-gray-900 rounded-md flex items-center justify-center text-white shadow hover:brightness-110 active:scale-95 transition-all"
                   title={`Кнопка ${num}`}
                 >
                   {num}
@@ -358,19 +369,19 @@ const RemoteDisplay = ({ remoteType, selectedError, onRemoteAction }: RemoteDisp
               ))}
               <button
                 onClick={() => handleButtonClick("lang")}
-                className="w-10 h-8 bg-gray-800 rounded-md flex items-center justify-center text-white text-xs"
+                className="w-10 h-8 bg-gray-900 rounded-md flex items-center justify-center text-white text-xs shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 LANG
               </button>
               <button
                 onClick={() => handleButtonClick("0")}
-                className="w-8 h-8 bg-gray-800 rounded-md flex items-center justify-center text-white"
+                className="w-8 h-8 bg-gray-900 rounded-md flex items-center justify-center text-white shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 0
               </button>
               <button
                 onClick={() => handleButtonClick("list")}
-                className="w-10 h-8 bg-gray-800 rounded-md flex items-center justify-center text-white text-xs"
+                className="w-10 h-8 bg-gray-900 rounded-md flex items-center justify-center text-white text-xs shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 LIST
               </button>
@@ -380,13 +391,13 @@ const RemoteDisplay = ({ remoteType, selectedError, onRemoteAction }: RemoteDisp
             <div className="flex justify-between mt-4 mx-6">
               <button
                 onClick={() => handleButtonClick("back")}
-                className="w-12 h-8 bg-gray-900 rounded-full flex items-center justify-center text-white text-xs"
+                className="w-12 h-8 bg-gray-900 rounded-full flex items-center justify-center text-white text-xs shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 BACK
               </button>
               <button
                 onClick={() => handleButtonClick("info")}
-                className="w-12 h-8 bg-gray-900 rounded-full flex items-center justify-center text-white text-xs"
+                className="w-12 h-8 bg-gray-900 rounded-full flex items-center justify-center text-white text-xs shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 INFO
               </button>
@@ -395,13 +406,13 @@ const RemoteDisplay = ({ remoteType, selectedError, onRemoteAction }: RemoteDisp
             <div className="flex justify-between mt-2 mx-6">
               <button
                 onClick={() => handleButtonClick("menu")}
-                className="w-12 h-8 bg-gray-900 rounded-full flex items-center justify-center text-white text-xs"
+                className="w-12 h-8 bg-gray-900 rounded-full flex items-center justify-center text-white text-xs shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 MENU
               </button>
               <button
                 onClick={() => handleButtonClick("exit")}
-                className="w-12 h-8 bg-gray-900 rounded-full flex items-center justify-center text-white text-xs"
+                className="w-12 h-8 bg-gray-900 rounded-full flex items-center justify-center text-white text-xs shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 EXIT
               </button>
@@ -412,31 +423,31 @@ const RemoteDisplay = ({ remoteType, selectedError, onRemoteAction }: RemoteDisp
               <div className="w-24 h-24 relative">
                 <button
                   onClick={() => handleButtonClick("up")}
-                  className="absolute top-0 left-1/2 transform -translate-x-1/2 w-8 h-8 text-white flex items-center justify-center"
+                  className="absolute top-0 left-1/2 transform -translate-x-1/2 w-8 h-8 bg-gray-700 text-white flex items-center justify-center hover:brightness-110 active:scale-95 transition-all"
                 >
                   <ArrowUp size={18} />
                 </button>
                 <button
                   onClick={() => handleButtonClick("left")}
-                  className="absolute top-1/2 left-0 transform -translate-y-1/2 w-8 h-8 text-white flex items-center justify-center"
+                  className="absolute top-1/2 left-0 transform -translate-y-1/2 w-8 h-8 bg-gray-700 text-white flex items-center justify-center hover:brightness-110 active:scale-95 transition-all"
                 >
                   <ArrowLeft size={18} />
                 </button>
                 <button
                   onClick={() => handleButtonClick("ok")}
-                  className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-gray-900 text-white rounded-full flex items-center justify-center"
+                  className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-gray-900 text-white rounded-full flex items-center justify-center shadow hover:brightness-110 active:scale-95 transition-all"
                 >
                   OK
                 </button>
                 <button
                   onClick={() => handleButtonClick("right")}
-                  className="absolute top-1/2 right-0 transform -translate-y-1/2 w-8 h-8 text-white flex items-center justify-center"
+                  className="absolute top-1/2 right-0 transform -translate-y-1/2 w-8 h-8 bg-gray-700 text-white flex items-center justify-center hover:brightness-110 active:scale-95 transition-all"
                 >
                   <ArrowRight size={18} />
                 </button>
                 <button
                   onClick={() => handleButtonClick("down")}
-                  className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-8 text-white flex items-center justify-center"
+                  className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-8 bg-gray-700 text-white flex items-center justify-center hover:brightness-110 active:scale-95 transition-all"
                 >
                   <ArrowDown size={18} />
                 </button>
@@ -447,25 +458,25 @@ const RemoteDisplay = ({ remoteType, selectedError, onRemoteAction }: RemoteDisp
             <div className="grid grid-cols-4 gap-2 mt-4 mx-4">
               <button
                 onClick={() => handleButtonClick("aspect")}
-                className="w-10 h-8 bg-red-600 rounded-md flex items-center justify-center text-white text-xs"
+                className="w-10 h-8 bg-red-600 rounded-md flex items-center justify-center text-white text-xs shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 ASPECT
               </button>
               <button
                 onClick={() => handleButtonClick("epg")}
-                className="w-10 h-8 bg-green-600 rounded-md flex items-center justify-center text-white text-xs"
+                className="w-10 h-8 bg-green-600 rounded-md flex items-center justify-center text-white text-xs shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 EPG
               </button>
               <button
                 onClick={() => handleButtonClick("option")}
-                className="w-10 h-8 bg-yellow-500 rounded-md flex items-center justify-center text-white text-xs"
+                className="w-10 h-8 bg-yellow-500 rounded-md flex items-center justify-center text-white text-xs shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 OPTION
               </button>
               <button
                 onClick={() => handleButtonClick("sleep")}
-                className="w-10 h-8 bg-blue-600 rounded-md flex items-center justify-center text-white text-xs"
+                className="w-10 h-8 bg-blue-600 rounded-md flex items-center justify-center text-white text-xs shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 SLEEP
               </button>
@@ -475,25 +486,25 @@ const RemoteDisplay = ({ remoteType, selectedError, onRemoteAction }: RemoteDisp
             <div className="grid grid-cols-4 gap-2 mt-2 mx-4">
               <button
                 onClick={() => handleButtonClick("prev")}
-                className="w-8 h-8 bg-gray-800 rounded-md flex items-center justify-center text-white"
+                className="w-8 h-8 bg-gray-800 rounded-md flex items-center justify-center text-white shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 <SkipBack size={14} />
               </button>
               <button
                 onClick={() => handleButtonClick("play")}
-                className="w-8 h-8 bg-gray-800 rounded-md flex items-center justify-center text-white"
+                className="w-8 h-8 bg-gray-800 rounded-md flex items-center justify-center text-white shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 <Play size={14} />
               </button>
               <button
                 onClick={() => handleButtonClick("pause")}
-                className="w-8 h-8 bg-gray-800 rounded-md flex items-center justify-center text-white"
+                className="w-8 h-8 bg-gray-800 rounded-md flex items-center justify-center text-white shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 <Pause size={14} />
               </button>
               <button
                 onClick={() => handleButtonClick("next")}
-                className="w-8 h-8 bg-gray-800 rounded-md flex items-center justify-center text-white"
+                className="w-8 h-8 bg-gray-800 rounded-md flex items-center justify-center text-white shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 <SkipForward size={14} />
               </button>
@@ -508,14 +519,14 @@ const RemoteDisplay = ({ remoteType, selectedError, onRemoteAction }: RemoteDisp
             <div className="flex justify-between mt-4 mx-4">
               <button
                 onClick={() => handleButtonClick("power")}
-                className="w-8 h-8 bg-red-600 rounded-md"
+                className="w-8 h-8 bg-red-600 rounded-md shadow hover:brightness-110 active:scale-95 transition-all"
                 title="Кнопка питания"
               >
                 <Power size={14} color="white" className="mx-auto my-auto" />
               </button>
               <button
                 onClick={() => handleButtonClick("mute")}
-                className="w-8 h-8 bg-gray-800 rounded-md flex items-center justify-center text-white text-xs"
+                className="w-8 h-8 bg-gray-900 rounded-md flex items-center justify-center text-white text-xs shadow hover:brightness-110 active:scale-95 transition-all"
                 title="Без звука"
               >
                 <VolumeX size={14} color="white" />
@@ -526,25 +537,25 @@ const RemoteDisplay = ({ remoteType, selectedError, onRemoteAction }: RemoteDisp
             <div className="flex justify-between mt-4 mx-4">
               <button
                 onClick={() => handleButtonClick("prev")}
-                className="w-8 h-8 bg-gray-800 rounded-md flex items-center justify-center text-white text-xs"
+                className="w-8 h-8 bg-gray-900 rounded-md flex items-center justify-center text-white text-xs shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 <SkipBack size={14} />
               </button>
               <button
                 onClick={() => handleButtonClick("rec")}
-                className="w-8 h-8 bg-red-600 rounded-md flex items-center justify-center text-white text-xs"
+                className="w-8 h-8 bg-red-600 rounded-md flex items-center justify-center text-white text-xs shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 ●
               </button>
               <button
                 onClick={() => handleButtonClick("stop")}
-                className="w-8 h-8 bg-gray-800 rounded-md flex items-center justify-center text-white text-xs"
+                className="w-8 h-8 bg-gray-900 rounded-md flex items-center justify-center text-white text-xs shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 <Square size={14} />
               </button>
               <button
                 onClick={() => handleButtonClick("next")}
-                className="w-8 h-8 bg-gray-800 rounded-md flex items-center justify-center text-white text-xs"
+                className="w-8 h-8 bg-gray-900 rounded-md flex items-center justify-center text-white text-xs shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 <SkipForward size={14} />
               </button>
@@ -554,25 +565,25 @@ const RemoteDisplay = ({ remoteType, selectedError, onRemoteAction }: RemoteDisp
             <div className="grid grid-cols-4 gap-2 mt-4 mx-4">
               <button
                 onClick={() => handleButtonClick("audio")}
-                className="w-10 h-8 bg-red-500 rounded-md flex items-center justify-center text-white text-xs"
+                className="w-10 h-8 bg-red-500 rounded-md flex items-center justify-center text-white text-xs shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 AUDIO
               </button>
               <button
                 onClick={() => handleButtonClick("ttx")}
-                className="w-10 h-8 bg-green-600 rounded-md flex items-center justify-center text-white text-xs"
+                className="w-10 h-8 bg-green-600 rounded-md flex items-center justify-center text-white text-xs shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 TTX
               </button>
               <button
                 onClick={() => handleButtonClick("zoom")}
-                className="w-10 h-8 bg-yellow-500 rounded-md flex items-center justify-center text-white text-xs"
+                className="w-10 h-8 bg-yellow-500 rounded-md flex items-center justify-center text-white text-xs shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 ZOOM
               </button>
               <button
                 onClick={() => handleButtonClick("sub")}
-                className="w-10 h-8 bg-blue-600 rounded-md flex items-center justify-center text-white text-xs"
+                className="w-10 h-8 bg-blue-600 rounded-md flex items-center justify-center text-white text-xs shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 SUB
               </button>
@@ -582,13 +593,13 @@ const RemoteDisplay = ({ remoteType, selectedError, onRemoteAction }: RemoteDisp
             <div className="flex justify-between mt-4 mx-8">
               <button
                 onClick={() => handleButtonClick("info")}
-                className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-white text-xs"
+                className="w-10 h-10 bg-gray-900 rounded-full flex items-center justify-center text-white text-xs shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 INFO
               </button>
               <button
                 onClick={() => handleButtonClick("recall")}
-                className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-white text-xs"
+                className="w-10 h-10 bg-gray-900 rounded-full flex items-center justify-center text-white text-xs shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 RECALL
               </button>
@@ -599,31 +610,31 @@ const RemoteDisplay = ({ remoteType, selectedError, onRemoteAction }: RemoteDisp
               <div className="w-24 h-24 relative">
                 <button
                   onClick={() => handleButtonClick("up")}
-                  className="absolute top-0 left-1/2 transform -translate-x-1/2 w-8 h-8 text-white flex items-center justify-center"
+                  className="absolute top-0 left-1/2 transform -translate-x-1/2 w-8 h-8 bg-gray-700 text-white flex items-center justify-center hover:brightness-110 active:scale-95 transition-all"
                 >
                   <ArrowUp size={18} />
                 </button>
                 <button
                   onClick={() => handleButtonClick("left")}
-                  className="absolute top-1/2 left-0 transform -translate-y-1/2 w-8 h-8 text-white flex items-center justify-center"
+                  className="absolute top-1/2 left-0 transform -translate-y-1/2 w-8 h-8 bg-gray-700 text-white flex items-center justify-center hover:brightness-110 active:scale-95 transition-all"
                 >
                   <ArrowLeft size={18} />
                 </button>
                 <button
                   onClick={() => handleButtonClick("ok")}
-                  className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-gray-900 text-white rounded-full flex items-center justify-center"
+                  className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-gray-900 text-white rounded-full flex items-center justify-center shadow-md hover:brightness-110 active:scale-95 transition-all"
                 >
                   OK
                 </button>
                 <button
                   onClick={() => handleButtonClick("right")}
-                  className="absolute top-1/2 right-0 transform -translate-y-1/2 w-8 h-8 text-white flex items-center justify-center"
+                  className="absolute top-1/2 right-0 transform -translate-y-1/2 w-8 h-8 bg-gray-700 text-white flex items-center justify-center hover:brightness-110 active:scale-95 transition-all"
                 >
                   <ArrowRight size={18} />
                 </button>
                 <button
                   onClick={() => handleButtonClick("down")}
-                  className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-8 text-white flex items-center justify-center"
+                  className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-8 bg-gray-700 text-white flex items-center justify-center hover:brightness-110 active:scale-95 transition-all"
                 >
                   <ArrowDown size={18} />
                 </button>
@@ -634,13 +645,13 @@ const RemoteDisplay = ({ remoteType, selectedError, onRemoteAction }: RemoteDisp
             <div className="flex justify-between mt-2 mx-8">
               <button
                 onClick={() => handleButtonClick("menu")}
-                className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-white text-xs"
+                className="w-10 h-10 bg-gray-900 rounded-full flex items-center justify-center text-white text-xs shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 MENU
               </button>
               <button
                 onClick={() => handleButtonClick("exit")}
-                className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-white text-xs"
+                className="w-10 h-10 bg-gray-900 rounded-full flex items-center justify-center text-white text-xs shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 EXIT
               </button>
@@ -651,16 +662,16 @@ const RemoteDisplay = ({ remoteType, selectedError, onRemoteAction }: RemoteDisp
               <div className="flex flex-col items-center">
                 <button
                   onClick={() => handleButtonClick("vol+")}
-                  className="w-8 h-8 bg-gray-800 rounded-t-md flex items-center justify-center text-white text-xs"
+                  className="w-8 h-8 bg-gray-900 rounded-t-md flex items-center justify-center text-white text-xs shadow hover:brightness-110 active:scale-95 transition-all"
                 >
                   +
                 </button>
-                <div className="w-8 flex items-center justify-center bg-gray-700 text-white text-xs py-1">
+                <div className="w-8 flex items-center justify-center bg-gray-800 text-white text-xs py-1">
                   VOL
                 </div>
                 <button
                   onClick={() => handleButtonClick("vol-")}
-                  className="w-8 h-8 bg-gray-800 rounded-b-md flex items-center justify-center text-white text-xs"
+                  className="w-8 h-8 bg-gray-900 rounded-b-md flex items-center justify-center text-white text-xs shadow hover:brightness-110 active:scale-95 transition-all"
                 >
                   -
                 </button>
@@ -668,7 +679,7 @@ const RemoteDisplay = ({ remoteType, selectedError, onRemoteAction }: RemoteDisp
               
               <button
                 onClick={() => handleButtonClick("fav")}
-                className="w-8 h-8 bg-gray-800 rounded-md flex items-center justify-center text-white text-xs"
+                className="w-8 h-8 bg-gray-900 rounded-md flex items-center justify-center text-white text-xs shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 FAV
               </button>
@@ -676,13 +687,13 @@ const RemoteDisplay = ({ remoteType, selectedError, onRemoteAction }: RemoteDisp
               <div className="flex">
                 <button
                   onClick={() => handleButtonClick("play")}
-                  className="w-8 h-8 bg-gray-800 rounded-l-md flex items-center justify-center text-white"
+                  className="w-8 h-8 bg-gray-900 rounded-l-md flex items-center justify-center text-white shadow hover:brightness-110 active:scale-95 transition-all"
                 >
                   <Play size={14} />
                 </button>
                 <button
                   onClick={() => handleButtonClick("pause")}
-                  className="w-8 h-8 bg-gray-800 rounded-r-md flex items-center justify-center text-white"
+                  className="w-8 h-8 bg-gray-900 rounded-r-md flex items-center justify-center text-white shadow hover:brightness-110 active:scale-95 transition-all"
                 >
                   <Pause size={14} />
                 </button>
@@ -695,7 +706,7 @@ const RemoteDisplay = ({ remoteType, selectedError, onRemoteAction }: RemoteDisp
                 <button
                   key={num}
                   onClick={() => handleButtonClick(num.toString())}
-                  className="w-8 h-8 bg-gray-800 rounded-md flex items-center justify-center text-white"
+                  className="w-8 h-8 bg-gray-900 rounded-md flex items-center justify-center text-white shadow hover:brightness-110 active:scale-95 transition-all"
                   title={`Кнопка ${num}`}
                 >
                   {num}
@@ -703,19 +714,19 @@ const RemoteDisplay = ({ remoteType, selectedError, onRemoteAction }: RemoteDisp
               ))}
               <button
                 onClick={() => handleButtonClick("tvr")}
-                className="w-8 h-8 bg-gray-800 rounded-md flex items-center justify-center text-white text-xs"
+                className="w-8 h-8 bg-gray-900 rounded-md flex items-center justify-center text-white text-xs shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 TV/R
               </button>
               <button
                 onClick={() => handleButtonClick("0")}
-                className="w-8 h-8 bg-gray-800 rounded-md flex items-center justify-center text-white"
+                className="w-8 h-8 bg-gray-900 rounded-md flex items-center justify-center text-white shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 0
               </button>
               <button
                 onClick={() => handleButtonClick("sat")}
-                className="w-8 h-8 bg-gray-800 rounded-md flex items-center justify-center text-white text-xs"
+                className="w-8 h-8 bg-gray-900 rounded-md flex items-center justify-center text-white text-xs shadow hover:brightness-110 active:scale-95 transition-all"
               >
                 SAT
               </button>
@@ -730,7 +741,7 @@ const RemoteDisplay = ({ remoteType, selectedError, onRemoteAction }: RemoteDisp
 
   return (
     <div className="flex flex-col items-center">
-      <div className="bg-white p-4 rounded-lg shadow-md relative">
+      <div className="bg-black/5 backdrop-blur-sm p-4 rounded-lg shadow-md relative">
         <img 
           src={remoteImages[remoteType]}
           alt={`Пульт ${remoteType}`}

@@ -8,9 +8,24 @@ interface RemoteSelectionProps {
 
 const RemoteSelection = ({ onSelectRemote }: RemoteSelectionProps) => {
   const remotes = [
-    { id: 'OpenBox', name: 'OpenBox', image: '/images/openbox.jpg' },
-    { id: 'HDBox', name: 'HDBox', image: '/images/hdbox.jpg' },
-    { id: 'Uclan', name: 'Uclan', image: '/images/uclan.jpg' },
+    { 
+      id: 'OpenBox', 
+      name: 'OpenBox', 
+      image: '/lovable-uploads/64b3e7a7-593e-444b-8020-cc0203022c1c.png',
+      description: 'Пульт для спутникового ресивера OpenBox'
+    },
+    { 
+      id: 'HDBox', 
+      name: 'HDBox', 
+      image: '/lovable-uploads/6126de2f-146b-46b7-9b74-7f3e24dd4394.png',
+      description: 'Пульт для цифрового ресивера HDBox'
+    },
+    { 
+      id: 'Uclan', 
+      name: 'Uclan', 
+      image: '/lovable-uploads/892127b7-c67e-44b2-a005-f579a19850ca.png',
+      description: 'Пульт для спутникового ресивера Uclan'
+    },
   ];
 
   return (
@@ -21,17 +36,18 @@ const RemoteSelection = ({ onSelectRemote }: RemoteSelectionProps) => {
         {remotes.map((remote) => (
           <div 
             key={remote.id}
-            className="bg-white rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+            className="bg-black/5 backdrop-blur-sm rounded-lg p-6 shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer border border-gray-200 hover:border-gray-300 transform hover:-translate-y-1"
             onClick={() => onSelectRemote(remote.id)}
           >
-            <div className="aspect-[2/3] bg-gray-100 rounded flex items-center justify-center mb-3">
+            <div className="aspect-[2/3] bg-gray-100 rounded flex items-center justify-center mb-4">
               <img 
                 src={remote.image} 
                 alt={`Пульт ${remote.name}`} 
-                className="max-h-full max-w-full object-contain"
+                className="max-h-full max-w-full h-60 object-contain"
               />
             </div>
-            <h4 className="text-center font-medium">{remote.name}</h4>
+            <h4 className="text-center font-medium text-lg">{remote.name}</h4>
+            <p className="text-center text-gray-600 text-sm mt-2">{remote.description}</p>
           </div>
         ))}
       </div>
