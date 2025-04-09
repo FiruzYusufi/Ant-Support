@@ -8,6 +8,8 @@ const HelpSystem = () => {
   const [selectedRemote, setSelectedRemote] = useState('');
   const [selectedError, setSelectedError] = useState('');
   const [showTvScreen, setShowTvScreen] = useState(false);
+  const [tvMessage, setTvMessage] = useState<string | null>(null);
+  const [powerState, setPowerState] = useState<boolean>(true);
 
   const handleRemoteSelect = (remoteType: string) => {
     setSelectedRemote(remoteType);
@@ -16,6 +18,13 @@ const HelpSystem = () => {
 
   const handleErrorSelect = (errorType: string) => {
     setSelectedError(errorType);
+    if (errorType === 'no_signal') {
+      setTvMessage('Нет сигнала');
+    } else if (errorType === 'channels_encoded') {
+      setTvMessage('Каналы закодированы');
+    } else {
+      setTvMessage(null);
+    }
   };
 
   return (
@@ -34,22 +43,29 @@ const HelpSystem = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <RemoteDisplay remoteType={selectedRemote} />
+              <RemoteDisplay remoteType={selectedRemote} selectedError={selectedError} />
             </div>
             
             <div>
-              <div className="bg-gray-800 p-4 rounded-lg aspect-video mb-4">
-                <div className="h-full flex items-center justify-center">
-                  {selectedError === 'no_signal' && (
-                    <p className="text-white text-lg">Нет сигнала</p>
-                  )}
-                  {selectedError === 'channels_encoded' && (
-                    <p className="text-white text-lg">Каналы закодированы</p>
-                  )}
-                  {!selectedError && (
-                    <p className="text-gray-400 text-lg">Телевизор</p>
-                  )}
-                </div>
+              <div className="bg-gray-800 p-4 rounded-lg aspect-video mb-4 flex items-center justify-center">
+                {!powerState ? (
+                  <p className="text-gray-400 text-lg">ТВ выключен</p>
+                ) : (
+                  <div className="h-full w-full flex items-center justify-center">
+                    {selectedError === 'no_signal' && (
+                      <p className="text-white text-lg">Нет сигнала</p>
+                    )}
+                    {selectedError === 'channels_encoded' && (
+                      <p className="text-white text-lg">Каналы закодированы</p>
+                    )}
+                    {tvMessage && (
+                      <p className="text-white text-lg">{tvMessage}</p>
+                    )}
+                    {!selectedError && !tvMessage && (
+                      <p className="text-gray-400 text-lg">ТВ работает</p>
+                    )}
+                  </div>
+                )}
               </div>
               
               <ErrorMenu onSelectError={handleErrorSelect} />

@@ -14,13 +14,23 @@ const ErrorMenu = ({ onSelectError }: ErrorMenuProps) => {
       
       <RadioGroup defaultValue="" onValueChange={onSelectError}>
         <div className="flex items-center space-x-2 mb-2">
+          <RadioGroupItem value="" id="no_error" />
+          <Label htmlFor="no_error">Нет ошибки</Label>
+        </div>
+        
+        <div className="flex items-center space-x-2 mb-2">
           <RadioGroupItem value="no_signal" id="no_signal" />
           <Label htmlFor="no_signal">Нет сигнала</Label>
         </div>
         
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 mb-2">
           <RadioGroupItem value="channels_encoded" id="channels_encoded" />
           <Label htmlFor="channels_encoded">Каналы закодированы</Label>
+        </div>
+        
+        <div className="flex items-center space-x-2">
+          <RadioGroupItem value="no_channels" id="no_channels" />
+          <Label htmlFor="no_channels">Каналы не настроены</Label>
         </div>
       </RadioGroup>
     </div>
