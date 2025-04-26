@@ -3,8 +3,22 @@ import React, { useState, useEffect } from 'react';
 import RemoteSelection from './RemoteSelection';
 import RemoteDisplay from './RemoteDisplay';
 import ErrorMenu from './ErrorMenu';
+import TVScreen from './tv/TVScreen';
 import { toast } from 'sonner';
-import { VolumeX, Volume2 } from 'lucide-react';
+import { Channel } from '@/types/tv';
+
+const defaultChannels: Channel[] = [
+  { number: 1, name: "Первый канал", logo: "https://via.placeholder.com/50x30?text=1", contentType: "news", description: "Информационные и общественно-политические программы" },
+  { number: 2, name: "Россия 1", logo: "https://via.placeholder.com/50x30?text=2", contentType: "news", description: "Новости и аналитика, информационные передачи" },
+  { number: 3, name: "НТВ", logo: "https://via.placeholder.com/50x30?text=3", contentType: "crime", description: "Криминальные передачи и новости" },
+  { number: 4, name: "ТНТ", logo: "https://via.placeholder.com/50x30?text=4", contentType: "entertainment", description: "Развлекательные шоу и сериалы" },
+  { number: 5, name: "СТС", logo: "https://via.placeholder.com/50x30?text=5", contentType: "entertainment", description: "Семейные фильмы и развлекательные программы" },
+  { number: 6, name: "Карусель", logo: "https://via.placeholder.com/50x30?text=6", contentType: "kids", description: "Детские мультфильмы и передачи" },
+  { number: 7, name: "Матч ТВ", logo: "https://via.placeholder.com/50x30?text=7", contentType: "sports", description: "Спортивные трансляции и новости спорта" },
+  { number: 8, name: "Культура", logo: "https://via.placeholder.com/50x30?text=8", contentType: "culture", description: "Искусство, история, документальные фильмы" },
+  { number: 9, name: "РЕН ТВ", logo: "https://via.placeholder.com/50x30?text=9", contentType: "entertainment", description: "Фильмы и развлекательные программы" },
+  { number: 10, name: "Мульт", logo: "https://via.placeholder.com/50x30?text=10", contentType: "kids", description: "Мультфильмы для детей разных возрастов" }
+];
 
 const HelpSystem = () => {
   const [selectedRemote, setSelectedRemote] = useState('');
@@ -19,18 +33,7 @@ const HelpSystem = () => {
   const [menuSelection, setMenuSelection] = useState<string>('main');
   const [menuIndex, setMenuIndex] = useState<number>(0);
   const [channelSearchProgress, setChannelSearchProgress] = useState<number>(0);
-  const [channelList, setChannelList] = useState<Array<{number: number, name: string, logo?: string, contentType: string, description: string}>>([
-    { number: 1, name: "Первый канал", logo: "https://via.placeholder.com/50x30?text=1", contentType: "news", description: "Информационные и общественно-политические программы" },
-    { number: 2, name: "Россия 1", logo: "https://via.placeholder.com/50x30?text=2", contentType: "news", description: "Новости и аналитика, информационные передачи" },
-    { number: 3, name: "НТВ", logo: "https://via.placeholder.com/50x30?text=3", contentType: "crime", description: "Криминальные передачи и новости" },
-    { number: 4, name: "ТНТ", logo: "https://via.placeholder.com/50x30?text=4", contentType: "entertainment", description: "Развлекательные шоу и сериалы" },
-    { number: 5, name: "СТС", logo: "https://via.placeholder.com/50x30?text=5", contentType: "entertainment", description: "Семейные фильмы и развлекательные программы" },
-    { number: 6, name: "Карусель", logo: "https://via.placeholder.com/50x30?text=6", contentType: "kids", description: "Детские мультфильмы и передачи" },
-    { number: 7, name: "Матч ТВ", logo: "https://via.placeholder.com/50x30?text=7", contentType: "sports", description: "Спортивные трансляции и новости спорта" },
-    { number: 8, name: "Культура", logo: "https://via.placeholder.com/50x30?text=8", contentType: "culture", description: "Искусство, история, документальные фильмы" },
-    { number: 9, name: "РЕН ТВ", logo: "https://via.placeholder.com/50x30?text=9", contentType: "entertainment", description: "Фильмы и развлекательные программы" },
-    { number: 10, name: "Мульт", logo: "https://via.placeholder.com/50x30?text=10", contentType: "kids", description: "Мультфильмы для детей разных возрастов" }
-  ]);
+  const [channelList, setChannelList] = useState<Channel[]>(defaultChannels);
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [showInfo, setShowInfo] = useState<boolean>(false);
@@ -38,24 +41,20 @@ const HelpSystem = () => {
   const [sleepTime, setSleepTime] = useState<number>(0);
   const [aspectRatio, setAspectRatio] = useState<string>("16:9");
 
-  // Close volume indicator after delay
   useEffect(() => {
     if (showVolume) {
       const timer = setTimeout(() => {
         setShowVolume(false);
       }, 2000);
-      
       return () => clearTimeout(timer);
     }
   }, [showVolume, volume]);
 
-  // Auto-hide info panel
   useEffect(() => {
     if (showInfo) {
       const timer = setTimeout(() => {
         setShowInfo(false);
       }, 5000);
-      
       return () => clearTimeout(timer);
     }
   }, [showInfo]);
@@ -63,6 +62,25 @@ const HelpSystem = () => {
   const handleRemoteSelect = (remoteType: string) => {
     setSelectedRemote(remoteType);
     setShowTvScreen(true);
+  };
+
+  const startChannelSearch = () => {
+    setIsSearching(true);
+    setChannelSearchProgress(0);
+    toast.success('Начат поиск каналов');
+    
+    const searchInterval = setInterval(() => {
+      setChannelSearchProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(searchInterval);
+          setIsSearching(false);
+          toast.success('Поиск каналов завершен');
+          setTvMessage('Найдено каналов: ' + channelList.length);
+          return 100;
+        }
+        return prev + 5;
+      });
+    }, 500);
   };
 
   const handleErrorSelect = (errorType: string) => {
@@ -105,32 +123,12 @@ const HelpSystem = () => {
     }
   };
 
-  const startChannelSearch = () => {
-    setIsSearching(true);
-    setChannelSearchProgress(0);
-    toast.success('Начат поиск каналов');
-    
-    const searchInterval = setInterval(() => {
-      setChannelSearchProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(searchInterval);
-          setIsSearching(false);
-          toast.success('Поиск каналов завершен');
-          setTvMessage('Найдено каналов: ' + channelList.length);
-          return 100;
-        }
-        return prev + 5;
-      });
-    }, 500);
-  };
-
   const handleRemoteAction = (action: string, value?: any) => {
     switch(action) {
       case 'power':
         setPowerState(!powerState);
         toast(powerState ? 'Выключение ТВ...' : 'Включение ТВ...');
         if (!powerState) {
-          // Turning TV back on
           setShowSleepTimer(false);
         }
         break;
@@ -187,14 +185,12 @@ const HelpSystem = () => {
       
       case 'navigate':
         if (powerState && showMenu) {
-          const menuItems = getMenuItems(menuSelection);
-          
           if (value === 'up') {
             setMenuIndex(prev => prev > 0 ? prev - 1 : 0);
           } else if (value === 'down') {
+            const menuItems = getMenuItems(menuSelection);
             setMenuIndex(prev => prev < menuItems.length - 1 ? prev + 1 : menuItems.length - 1);
           }
-          
           toast(`Навигация: ${value}`);
         }
         break;
@@ -230,7 +226,6 @@ const HelpSystem = () => {
               setShowMenu(false);
               startChannelSearch();
             }
-            
             toast.success(`Выбрано: ${menuItems[menuIndex]}`);
           }
         }
@@ -249,30 +244,6 @@ const HelpSystem = () => {
         }
         break;
       
-      case 'search_channels':
-        if (powerState) {
-          startChannelSearch();
-        }
-        break;
-      
-      case 'exit':
-        if (powerState) {
-          if (showMenu) {
-            if (menuSelection !== 'main') {
-              setMenuSelection('main');
-              setMenuIndex(0);
-              toast('Возврат в главное меню');
-            } else {
-              setShowMenu(false);
-              toast('Выход из меню');
-            }
-          } else if (showInfo) {
-            setShowInfo(false);
-            toast('Скрытие информации');
-          }
-        }
-        break;
-
       case 'aspect_ratio':
         if (powerState && !showMenu && !selectedError) {
           const ratios = ["4:3", "16:9", "Zoom", "Auto"];
@@ -282,7 +253,6 @@ const HelpSystem = () => {
           setAspectRatio(ratios[nextIndex]);
           toast.success(`Соотношение сторон: ${ratios[nextIndex]}`);
           
-          // Show temporary message on TV
           const previousMessage = tvMessage;
           setTvMessage(`Соотношение сторон: ${ratios[nextIndex]}`);
           
@@ -311,310 +281,14 @@ const HelpSystem = () => {
     }
   };
 
-  const getMenuItems = (section: string): string[] => {
-    switch (section) {
-      case 'main':
-        return ["Настройка каналов", "Настройка изображения", "Настройка звука", "Настройка времени", "Опции системы"];
-      case 'channels':
-        return ["Автоматический поиск", "Ручной поиск", "Редактирование каналов"];
-      case 'picture':
-        return ["Режим изображения", "Контраст", "Яркость", "Цветность", "Резкость"];
-      case 'sound':
-        return ["Режим звука", "Баланс", "Автогромкость", "Цифровой выход"];
-      case 'time':
-        return ["Часовой пояс", "Таймер сна", "Автовыключение"];
-      case 'system':
-        return ["Язык меню", "Сброс настроек", "Информация о системе"];
-      default:
-        return [];
-    }
-  };
-
-  const renderTvScreen = () => {
-    if (!powerState) {
-      return <p className="text-gray-400 text-lg">ТВ выключен</p>;
-    }
-    
-    if (isSearching) {
-      return (
-        <div className="w-full h-full flex flex-col items-center justify-center">
-          <p className="text-white text-lg mb-4">Поиск каналов...</p>
-          <div className="w-4/5 h-2 bg-gray-600 rounded-full">
-            <div 
-              className="h-full bg-blue-500 rounded-full transition-all duration-300" 
-              style={{ width: `${channelSearchProgress}%` }}
-            ></div>
-          </div>
-          <p className="text-white mt-2">{channelSearchProgress}%</p>
-        </div>
-      );
-    }
-    
-    if (selectedError === 'no_signal') {
-      return (
-        <div className="w-full h-full flex flex-col items-center justify-center">
-          <p className="text-white text-lg mb-2">Нет сигнала</p>
-          <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
-        </div>
-      );
-    }
-    
-    if (selectedError === 'channels_encoded') {
-      return (
-        <div className="w-full h-full flex flex-col items-center justify-center">
-          <p className="text-white text-lg mb-2">Каналы закодированы</p>
-          <p className="text-white text-sm">Необходима подписка для просмотра</p>
-          <div className="mt-4 p-2 bg-red-600/80 rounded">
-            <p className="text-white text-xs">Ошибка доступа: E-04</p>
-          </div>
-        </div>
-      );
-    }
-    
-    if (selectedError === 'no_channels') {
-      return (
-        <div className="w-full h-full flex flex-col items-center justify-center">
-          <p className="text-white text-lg mb-4">Каналы не настроены</p>
-          <div className="bg-gray-800/80 p-3 rounded">
-            <p className="text-white text-sm">Нажмите MENU для входа в настройки</p>
-            <p className="text-white text-sm">или кнопку ПОИСК на пульте</p>
-          </div>
-        </div>
-      );
-    }
-    
-    if (selectedError === 'weak_signal') {
-      return (
-        <div className="flex flex-col items-center justify-center h-full">
-          <p className="text-white text-lg mb-4">Слабый сигнал</p>
-          <div className="flex mt-2">
-            <div className="h-6 w-2 bg-green-500 mx-0.5"></div>
-            <div className="h-6 w-2 bg-green-500 mx-0.5"></div>
-            <div className="h-6 w-2 bg-gray-500 mx-0.5"></div>
-            <div className="h-6 w-2 bg-gray-500 mx-0.5"></div>
-            <div className="h-6 w-2 bg-gray-500 mx-0.5"></div>
-          </div>
-          <p className="text-white mt-4 text-sm">Проверьте подключение антенны</p>
-        </div>
-      );
-    }
-
-    if (selectedError === 'hdmi') {
-      return (
-        <div className="flex flex-col items-center justify-center h-full">
-          <p className="text-white text-lg mb-2">HDMI</p>
-          <div className="flex items-center bg-black/40 p-4 rounded">
-            <p className="text-white text-sm">Внешнее устройство не обнаружено</p>
-          </div>
-        </div>
-      );
-    }
-    
-    if (showMenu) {
-      return renderTvMenu();
-    }
-    
-    if (tvMessage) {
-      return <p className="text-white text-lg">{tvMessage}</p>;
-    }
-    
-    // Normal TV viewing
-    const currentChannelInfo = channelList.find(ch => ch.number === currentChannel) || 
-      { number: currentChannel, name: `Канал ${currentChannel}`, contentType: "unknown", description: "Нет информации" };
-
-    return (
-      <div className="flex flex-col items-center justify-center h-full">
-        {showSleepTimer && (
-          <div className="absolute top-2 left-2 bg-red-600/80 px-2 py-1 text-sm text-white rounded flex items-center space-x-1">
-            <span className="animate-pulse">●</span>
-            <span>Сон: {sleepTime} мин</span>
-          </div>
-        )}
-        
-        <div className="absolute top-2 right-2 bg-gray-800/80 px-2 py-1 text-sm text-white rounded">
-          {currentChannel}
-        </div>
-
-        {showInfo && (
-          <div className="absolute bottom-4 left-4 right-4 bg-black/70 p-3 rounded">
-            <div className="flex items-center mb-2">
-              {currentChannelInfo.logo && (
-                <div className="w-12 h-8 bg-gray-700 rounded mr-2 flex items-center justify-center text-xs">
-                  {currentChannel}
-                </div>
-              )}
-              <div>
-                <p className="text-white font-bold">{currentChannelInfo.name}</p>
-                <p className="text-gray-300 text-sm">{currentChannelInfo.description}</p>
-              </div>
-            </div>
-            <div className="flex justify-between text-xs text-gray-300">
-              <span>Соотношение: {aspectRatio}</span>
-              <span>Язык: Русский</span>
-            </div>
-          </div>
-        )}
-        
-        {/* Display appropriate content based on channel type */}
-        <div className="relative w-full h-full flex items-center justify-center">
-          {renderChannelContent(currentChannelInfo.contentType, currentChannelInfo.name)}
-        </div>
-        
-        {/* Volume indicator that appears temporarily */}
-        {showVolume && (
-          <div className="absolute bottom-8 left-4 right-4 flex items-center space-x-2">
-            {isMuted ? (
-              <VolumeX size={20} className="text-white" />
-            ) : (
-              <Volume2 size={20} className="text-white" />
-            )}
-            
-            <div className="flex-1 bg-gray-800 rounded-full h-2">
-              <div 
-                className={`h-full rounded-full ${isMuted ? 'bg-red-500' : 'bg-green-500'}`}
-                style={{ width: isMuted ? '0%' : `${volume}%` }}
-              ></div>
-            </div>
-            <span className="text-white text-sm">{isMuted ? 'MUTE' : volume}</span>
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  const renderChannelContent = (contentType: string, channelName: string) => {
-    switch (contentType) {
-      case "news":
-        return (
-          <div className="w-full h-full flex flex-col">
-            <div className="bg-blue-900 text-white p-1 text-xs">ПРЯМОЙ ЭФИР</div>
-            <div className="flex-1 bg-gradient-to-r from-blue-800 to-blue-900 flex items-center justify-center">
-              <div className="bg-blue-950/50 p-4 rounded">
-                <h3 className="text-white font-bold mb-2">Последние новости</h3>
-                <p className="text-gray-200 text-sm">Обсуждение экономической ситуации</p>
-              </div>
-            </div>
-            <div className="bg-blue-900 flex justify-between items-center p-1">
-              <span className="text-white text-xs">{channelName}</span>
-              <span className="text-white text-xs">LIVE</span>
-            </div>
-          </div>
-        );
-      
-      case "kids":
-        return (
-          <div className="w-full h-full bg-gradient-to-br from-pink-400 to-yellow-300 flex items-center justify-center">
-            <div className="w-24 h-24 bg-yellow-400 rounded-full animate-bounce flex items-center justify-center">
-              <div className="w-16 h-16 bg-pink-500 rounded-full animate-pulse"></div>
-            </div>
-            <div className="absolute bottom-4 left-4 bg-white/80 rounded px-2 py-1">
-              <p className="text-sm font-bold">{channelName}</p>
-              <p className="text-xs">Мультфильмы для детей</p>
-            </div>
-          </div>
-        );
-      
-      case "entertainment":
-        return (
-          <div className="w-full h-full bg-gradient-to-br from-purple-800 to-purple-500 flex flex-col items-center justify-center">
-            <div className="w-16 h-16 border-4 border-white rounded-full mb-2"></div>
-            <p className="text-white font-bold text-xl mb-1">Вечернее шоу</p>
-            <p className="text-gray-200 text-sm">{channelName} представляет</p>
-          </div>
-        );
-      
-      case "sports":
-        return (
-          <div className="w-full h-full bg-gradient-to-br from-green-800 to-green-500">
-            <div className="w-full h-full flex flex-col">
-              <div className="bg-black/70 text-white p-1 flex justify-between">
-                <span className="text-xs">ФУТБОЛ: Лига Чемпионов</span>
-                <span className="text-xs font-bold">2 - 1</span>
-              </div>
-              <div className="flex-1 flex items-center justify-center">
-                <div className="relative w-32 h-24 border-2 border-white bg-green-700">
-                  <div className="absolute left-0 w-4 h-12 border border-white top-1/2 -translate-y-1/2"></div>
-                  <div className="absolute right-0 w-4 h-12 border border-white top-1/2 -translate-y-1/2"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-      
-      case "culture":
-        return (
-          <div className="w-full h-full bg-gradient-to-br from-amber-800 to-amber-500 flex items-center justify-center">
-            <div className="bg-black/40 p-3 rounded text-center">
-              <h3 className="text-white font-serif text-lg mb-2">История искусств</h3>
-              <p className="text-gray-200 text-sm font-serif">Документальный фильм</p>
-            </div>
-          </div>
-        );
-      
-      case "crime":
-        return (
-          <div className="w-full h-full bg-gradient-to-br from-gray-900 to-gray-700 flex items-center justify-center">
-            <div className="border-l-4 border-red-600 pl-2">
-              <h3 className="text-white font-bold mb-1">Криминальная хроника</h3>
-              <p className="text-gray-300 text-sm">Специальный репортаж</p>
-            </div>
-            <div className="absolute top-2 right-2 text-red-600 text-xs px-2 py-0.5 bg-black/50 rounded">
-              18+
-            </div>
-          </div>
-        );
-      
-      default:
-        return (
-          <div className="text-white text-center">
-            <p className="text-2xl">{channelName}</p>
-            <p className="text-gray-400 mt-4">Нажмите кнопки на пульте для управления ТВ</p>
-          </div>
-        );
-    }
-  };
-
-  const renderTvMenu = () => {
-    const menuItems = getMenuItems(menuSelection);
-    
-    return (
-      <div className="text-white h-full p-4 overflow-auto">
-        <h3 className="text-xl font-bold mb-4">
-          {menuSelection === 'main' ? 'Главное меню' : 
-          menuSelection === 'channels' ? 'Настройка каналов' :
-          menuSelection === 'picture' ? 'Настройка изображения' :
-          menuSelection === 'sound' ? 'Настройка звука' :
-          menuSelection === 'time' ? 'Настройка времени' : 'Опции системы'}
-        </h3>
-        
-        <ul className="space-y-2">
-          {menuItems.map((item, index) => (
-            <li 
-              key={index} 
-              className={`p-2 ${index === menuIndex ? 'bg-blue-700' : 'hover:bg-gray-800'} rounded-md transition-colors duration-150`}
-            >
-              {item}
-            </li>
-          ))}
-        </ul>
-        
-        <div className="absolute bottom-4 right-4 text-sm text-gray-400">
-          OK - выбрать | EXIT - назад
-        </div>
-      </div>
-    );
-  };
-
   return (
     <div className="max-w-4xl mx-auto">
       <h2 className="text-2xl font-semibold mb-6">Система помощи операторам</h2>
       
-      {/* Выбор пульта */}
       {!showTvScreen && (
         <RemoteSelection onSelectRemote={handleRemoteSelect} />
       )}
       
-      {/* Экран с телевизором и пультом */}
       {showTvScreen && (
         <div className="mt-8 animate-fade-in">
           <h3 className="text-xl font-semibold mb-4">Ваш выбор: {selectedRemote}</h3>
@@ -630,7 +304,24 @@ const HelpSystem = () => {
             
             <div>
               <div className="bg-black p-4 rounded-lg aspect-video mb-4 flex items-center justify-center relative overflow-hidden border-4 border-gray-800">
-                {renderTvScreen()}
+                <TVScreen
+                  powerState={powerState}
+                  currentChannel={currentChannel}
+                  volume={volume}
+                  isMuted={isMuted}
+                  showVolume={showVolume}
+                  showMenu={showMenu}
+                  menuSelection={menuSelection}
+                  menuIndex={menuIndex}
+                  showInfo={showInfo}
+                  showSleepTimer={showSleepTimer}
+                  sleepTime={sleepTime}
+                  aspectRatio={aspectRatio}
+                  tvMessage={tvMessage}
+                  isSearching={isSearching}
+                  channelSearchProgress={channelSearchProgress}
+                  channelList={channelList}
+                />
               </div>
               
               <ErrorMenu onSelectError={handleErrorSelect} />
