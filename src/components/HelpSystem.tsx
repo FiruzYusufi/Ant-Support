@@ -1,10 +1,9 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import RemoteSelection from './RemoteSelection';
 import RemoteDisplay from './RemoteDisplay';
 import ErrorMenu from './ErrorMenu';
 import TVScreen from './tv/TVScreen';
-import { toast } from 'sonner';
+import { useRemoteControl } from '@/hooks/useRemoteControl';
 import { Channel } from '@/types/tv';
 
 const defaultChannels: Channel[] = [
@@ -24,260 +23,55 @@ const HelpSystem = () => {
   const [selectedRemote, setSelectedRemote] = useState('');
   const [selectedError, setSelectedError] = useState('');
   const [showTvScreen, setShowTvScreen] = useState(false);
-  const [tvMessage, setTvMessage] = useState<string | null>(null);
-  const [powerState, setPowerState] = useState<boolean>(true);
-  const [currentChannel, setCurrentChannel] = useState<number>(1);
-  const [volume, setVolume] = useState<number>(50);
-  const [showVolume, setShowVolume] = useState<boolean>(false);
-  const [showMenu, setShowMenu] = useState<boolean>(false);
-  const [menuSelection, setMenuSelection] = useState<string>('main');
-  const [menuIndex, setMenuIndex] = useState<number>(0);
-  const [channelSearchProgress, setChannelSearchProgress] = useState<number>(0);
   const [channelList, setChannelList] = useState<Channel[]>(defaultChannels);
-  const [isSearching, setIsSearching] = useState<boolean>(false);
-  const [isMuted, setIsMuted] = useState<boolean>(false);
-  const [showInfo, setShowInfo] = useState<boolean>(false);
-  const [showSleepTimer, setShowSleepTimer] = useState<boolean>(false);
-  const [sleepTime, setSleepTime] = useState<number>(0);
-  const [aspectRatio, setAspectRatio] = useState<string>("16:9");
 
-  useEffect(() => {
-    if (showVolume) {
-      const timer = setTimeout(() => {
-        setShowVolume(false);
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [showVolume, volume]);
-
-  useEffect(() => {
-    if (showInfo) {
-      const timer = setTimeout(() => {
-        setShowInfo(false);
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [showInfo]);
+  const { tvState, handleRemoteAction } = useRemoteControl({
+    selectedError,
+    channelList,
+  });
 
   const handleRemoteSelect = (remoteType: string) => {
     setSelectedRemote(remoteType);
     setShowTvScreen(true);
   };
 
-  const startChannelSearch = () => {
-    setIsSearching(true);
-    setChannelSearchProgress(0);
-    toast.success('Начат поиск каналов');
-    
-    const searchInterval = setInterval(() => {
-      setChannelSearchProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(searchInterval);
-          setIsSearching(false);
-          toast.success('Поиск каналов завершен');
-          setTvMessage('Найдено каналов: ' + channelList.length);
-          return 100;
-        }
-        return prev + 5;
-      });
-    }, 500);
-  };
-
   const handleErrorSelect = (errorType: string) => {
     setSelectedError(errorType);
     
     if (errorType === 'no_signal') {
-      setTvMessage('Нет сигнала');
-      setShowMenu(false);
+      tvState.tvMessage = 'Нет сигнала';
+      tvState.showMenu = false;
     } else if (errorType === 'channels_encoded') {
-      setTvMessage('Каналы закодированы');
-      setShowMenu(false);
+      tvState.tvMessage = 'Каналы закодированы';
+      tvState.showMenu = false;
     } else if (errorType === 'no_channels') {
-      setTvMessage('Каналы не настроены. Используйте меню для поиска каналов.');
-      setShowMenu(false);
+      tvState.tvMessage = 'Каналы не настроены. Используйте меню для поиска каналов.';
+      tvState.showMenu = false;
       setChannelList([]);
     } else if (errorType === 'channel_search') {
-      setTvMessage(null);
-      setShowMenu(false);
-      startChannelSearch();
+      tvState.tvMessage = null;
+      tvState.showMenu = false;
+      handleRemoteAction('channel_search');
     } else if (errorType === 'menu_settings') {
-      setTvMessage(null);
-      setShowMenu(true);
-      setMenuSelection('main');
-      setMenuIndex(0);
+      tvState.tvMessage = null;
+      tvState.showMenu = true;
+      tvState.menuSelection = 'main';
+      tvState.menuIndex = 0;
     } else if (errorType === 'weak_signal') {
-      setTvMessage('Слабый сигнал');
-      setShowMenu(false);
+      tvState.tvMessage = 'Слабый сигнал';
+      tvState.showMenu = false;
     } else if (errorType === 'hdmi') {
-      setTvMessage('HDMI режим');
-      setShowMenu(false);
+      tvState.tvMessage = 'HDMI режим';
+      tvState.showMenu = false;
     } else if (errorType === 'sleep_timer') {
-      setShowSleepTimer(true);
-      setSleepTime(30);
-      setShowMenu(false);
-      setTvMessage(null);
+      tvState.showSleepTimer = true;
+      tvState.sleepTime = 30;
+      tvState.showMenu = false;
+      tvState.tvMessage = null;
     } else {
-      setTvMessage(null);
-      setShowMenu(false);
-      setShowSleepTimer(false);
-    }
-  };
-
-  const handleRemoteAction = (action: string, value?: any) => {
-    switch(action) {
-      case 'power':
-        setPowerState(!powerState);
-        toast(powerState ? 'Выключение ТВ...' : 'Включение ТВ...');
-        if (!powerState) {
-          setShowSleepTimer(false);
-        }
-        break;
-      
-      case 'channel':
-        if (powerState && !selectedError) {
-          setCurrentChannel(value);
-          toast.success(`Переключение на канал: ${value}`);
-          if (showInfo || showMenu) {
-            setShowInfo(false);
-            setShowMenu(false);
-          }
-        }
-        break;
-      
-      case 'volume':
-        if (powerState) {
-          const newVolume = Math.min(Math.max(volume + value, 0), 100);
-          setVolume(newVolume);
-          setShowVolume(true);
-          setIsMuted(false);
-          toast(`Громкость: ${newVolume}`);
-        }
-        break;
-      
-      case 'mute':
-        if (powerState) {
-          setIsMuted(!isMuted);
-          toast(isMuted ? 'Звук включен' : 'Звук выключен');
-          setShowVolume(true);
-        }
-        break;
-      
-      case 'menu':
-        if (powerState) {
-          setShowMenu(!showMenu);
-          setMenuSelection('main');
-          setMenuIndex(0);
-          if (showMenu) {
-            toast('Закрытие меню');
-          } else {
-            toast('Открытие меню');
-            setShowInfo(false);
-          }
-        }
-        break;
-      
-      case 'info':
-        if (powerState && !selectedError && !showMenu) {
-          setShowInfo(!showInfo);
-          toast(showInfo ? 'Скрытие информации' : 'Показ информации о канале');
-        }
-        break;
-      
-      case 'navigate':
-        if (powerState && showMenu) {
-          if (value === 'up') {
-            setMenuIndex(prev => prev > 0 ? prev - 1 : 0);
-          } else if (value === 'down') {
-            const menuItems = getMenuItems(menuSelection);
-            setMenuIndex(prev => prev < menuItems.length - 1 ? prev + 1 : menuItems.length - 1);
-          }
-          toast(`Навигация: ${value}`);
-        }
-        break;
-      
-      case 'ok':
-        if (powerState && showMenu) {
-          const menuItems = getMenuItems(menuSelection);
-          if (menuItems[menuIndex]) {
-            if (menuSelection === 'main') {
-              switch (menuIndex) {
-                case 0:
-                  setMenuSelection('channels');
-                  setMenuIndex(0);
-                  break;
-                case 1:
-                  setMenuSelection('picture');
-                  setMenuIndex(0);
-                  break;
-                case 2:
-                  setMenuSelection('sound');
-                  setMenuIndex(0);
-                  break;
-                case 3:
-                  setMenuSelection('time');
-                  setMenuIndex(0);
-                  break;
-                case 4:
-                  setMenuSelection('system');
-                  setMenuIndex(0);
-                  break;
-              }
-            } else if (menuSelection === 'channels' && menuIndex === 0) {
-              setShowMenu(false);
-              startChannelSearch();
-            }
-            toast.success(`Выбрано: ${menuItems[menuIndex]}`);
-          }
-        }
-        break;
-      
-      case 'channel_change':
-        if (powerState && !selectedError && channelList.length > 0) {
-          const currentIndex = channelList.findIndex(ch => ch.number === currentChannel);
-          let newIndex = currentIndex + value;
-          
-          if (newIndex < 0) newIndex = channelList.length - 1;
-          if (newIndex >= channelList.length) newIndex = 0;
-          
-          setCurrentChannel(channelList[newIndex].number);
-          toast.success(`Переключение на канал: ${channelList[newIndex].name}`);
-        }
-        break;
-      
-      case 'aspect_ratio':
-        if (powerState && !showMenu && !selectedError) {
-          const ratios = ["4:3", "16:9", "Zoom", "Auto"];
-          const currentIndex = ratios.indexOf(aspectRatio);
-          const nextIndex = (currentIndex + 1) % ratios.length;
-          
-          setAspectRatio(ratios[nextIndex]);
-          toast.success(`Соотношение сторон: ${ratios[nextIndex]}`);
-          
-          const previousMessage = tvMessage;
-          setTvMessage(`Соотношение сторон: ${ratios[nextIndex]}`);
-          
-          setTimeout(() => {
-            setTvMessage(previousMessage);
-          }, 2000);
-        }
-        break;
-
-      case 'sleep':
-        if (powerState) {
-          setShowSleepTimer(!showSleepTimer);
-          if (!showSleepTimer) {
-            setSleepTime(prev => prev || 30);
-            toast.success(`Таймер сна: ${sleepTime} минут`);
-          } else {
-            toast('Таймер сна отключен');
-          }
-        }
-        break;
-      
-      default:
-        if (powerState) {
-          toast(`Действие: ${action}`);
-        }
+      tvState.tvMessage = null;
+      tvState.showMenu = false;
+      tvState.showSleepTimer = false;
     }
   };
 
@@ -305,21 +99,7 @@ const HelpSystem = () => {
             <div>
               <div className="bg-black p-4 rounded-lg aspect-video mb-4 flex items-center justify-center relative overflow-hidden border-4 border-gray-800">
                 <TVScreen
-                  powerState={powerState}
-                  currentChannel={currentChannel}
-                  volume={volume}
-                  isMuted={isMuted}
-                  showVolume={showVolume}
-                  showMenu={showMenu}
-                  menuSelection={menuSelection}
-                  menuIndex={menuIndex}
-                  showInfo={showInfo}
-                  showSleepTimer={showSleepTimer}
-                  sleepTime={sleepTime}
-                  aspectRatio={aspectRatio}
-                  tvMessage={tvMessage}
-                  isSearching={isSearching}
-                  channelSearchProgress={channelSearchProgress}
+                  {...tvState}
                   channelList={channelList}
                 />
               </div>
