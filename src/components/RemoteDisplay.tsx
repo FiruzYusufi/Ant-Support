@@ -741,20 +741,21 @@ const RemoteDisplay = ({ remoteType, selectedError, onRemoteAction }: RemoteDisp
 
   return (
     <div className="flex flex-col items-center">
-      <div className="bg-black/5 backdrop-blur-sm p-4 rounded-lg shadow-md relative">
+      <div className="bg-black/80 backdrop-blur-sm p-4 rounded-lg shadow-[0_15px_30px_-10px_rgba(0,0,0,0.7)] relative">
         <img 
           src={remoteImages[remoteType]}
           alt={`Пульт ${remoteType}`}
-          className="h-auto max-h-96 mx-auto object-contain opacity-85"
+          className="h-auto max-h-96 mx-auto object-contain opacity-90 z-10 relative"
         />
         {renderRemoteButtons()}
       </div>
       <div className="mt-4 text-center text-sm">
-        <p>Выберите кнопку на пульте для управления телевизором</p>
-        <p className="text-gray-600 mt-1">Все кнопки активны и реагируют на нажатие</p>
+        <p className="text-white">Выберите кнопку на пульте для управления телевизором</p>
+        <p className="text-gray-400 mt-1">Все кнопки активны и реагируют на нажатие</p>
       </div>
     </div>
   );
 };
 
 export default RemoteDisplay;
+
